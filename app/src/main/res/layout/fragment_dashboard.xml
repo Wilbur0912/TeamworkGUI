@@ -45,7 +45,6 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="160dp"
             android:background="@drawable/dg_btn"
-            android:onClick="openAboutHistory"
             android:text="確定"
             tools:layout_editor_absoluteX="11dp"
             tools:layout_editor_absoluteY="476dp" />

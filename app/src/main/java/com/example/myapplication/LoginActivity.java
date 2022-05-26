@@ -3,6 +3,8 @@ package com.example.myapplication;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
@@ -13,38 +15,27 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class LoginActivity extends AppCompatActivity {
+    private EditText editText;
+    private String blockCharacterSet = "~#^|@$%&*!";
 
+    private InputFilter filter = new InputFilter() {
+        @Override
+        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+
+            if (source != null && blockCharacterSet.contains(("" + source))) {
+                return "";
+            }
+            return null;
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         Button login = this.findViewById(R.id.login);
         EditText account = this.findViewById(R.id.account);
-        TextView tv = this.findViewById(R.id.log);
-        account.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                String text = account.getText().toString();
-                //tv.setText(account.getText().toString());
-                if(text.contains("@")||text.contains("#")||text.contains("*")){
-                    tv.setText("invalid character");
-                    //Toast.makeText(LoginActivity.this,"帳號密碼錯誤",Toast.LENGTH_SHORT).show();
-                }
-                else{
-                    tv.setText("");
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
+        editText = (EditText) findViewById(R.id.account);
+        editText.setFilters(new InputFilter[] { filter });
 
         login.setOnClickListener(new View.OnClickListener(){
             @Override

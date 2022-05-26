@@ -2,11 +2,13 @@ package com.example.myapplication.ui.dashboard;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 import com.example.myapplication.R;
 
@@ -26,13 +28,15 @@ import java.util.HashMap;
 public class watchHistory extends AppCompatActivity {
 
 
-
     private ListView lv;
     String namey, age;
     private static String JSON_URL = "http://172.20.10.2:3000/";
     ArrayList<HashMap<String,String>> friendsList;
     @Override
     protected void onCreate(Bundle savedInstanceState)   {
+        Intent myIntent = getIntent();
+        //TextView date = findViewById(R.id.date);
+        //date.setText(myIntent.getStringExtra("date"));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.historyresults);
 
