@@ -1,0 +1,16 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <item name="principle" type="id" />
+    <item name="profitRate" type="id" />
+    <item name="investYears" type="id" />
+    <item name="calcInvest" type="id" />
+    <item name="invest_total" type="id" />
+    <item name="loan" type="id" />
+    <item name="interest" type="id" />
+    <item name="loanYears" type="id" />
+    <item name="calcLoan" type="id" />
+    <item name="repayment" type="id" />
+</resources>
