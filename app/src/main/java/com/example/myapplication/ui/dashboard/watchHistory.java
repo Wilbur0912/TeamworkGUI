@@ -30,16 +30,18 @@ public class watchHistory extends AppCompatActivity {
 
     private ListView lv;
     String namey, age;
+
+    String dateString;
     private static String JSON_URL = "http://172.20.10.2:3000/";
     ArrayList<HashMap<String,String>> friendsList;
     @Override
     protected void onCreate(Bundle savedInstanceState)   {
-        Intent myIntent = getIntent();
-        //TextView date = findViewById(R.id.date);
-        //date.setText(myIntent.getStringExtra("date"));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.historyresults);
-
+        TextView date = findViewById(R.id.dateTime) ;
+        Intent myIntent = getIntent();
+        dateString = myIntent.getStringExtra("date");
+        date.setText(dateString);
 
         friendsList = new ArrayList<>();
         lv = findViewById(R.id.Listview);
