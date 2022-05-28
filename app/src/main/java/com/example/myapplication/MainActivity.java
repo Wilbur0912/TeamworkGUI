@@ -1,11 +1,23 @@
 package com.example.myapplication;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 import com.example.myapplication.ui.dashboard.watchHistory;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
@@ -19,19 +31,47 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.myapplication.databinding.ActivityMainBinding;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+
 public class MainActivity extends AppCompatActivity  {
 
     private ActivityMainBinding binding;
 
+
+    String year,month,result;
+    int day;
+    String dateString;
+    private static String JSON_URL = "http://172.20.10.2:3000/";
+    ArrayList<HashMap<String,String>> friendsList;
+    private static final String TAG = "MainActivity";
+    private LineChart mChart;
+    int week1 = 0;
+    int week2 = 0;
+    int week3 = 0;
+    int week4 = 0;
+    int week5 = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        friendsList = new ArrayList<>();
+        GetData getData = new GetData();
+        getData.execute();
         BottomNavigationView navView = findViewById(R.id.nav_view);
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_home, R.id.navigation_dashboard)
                 .build();
@@ -50,6 +90,8 @@ public class MainActivity extends AppCompatActivity  {
             }
 
         });
+
+
     }
 
     public void openAboutHistory(View view){
@@ -57,4 +99,107 @@ public class MainActivity extends AppCompatActivity  {
         startActivity(intent);
     }
 
+    public class GetData extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... string){
+            String current ="";
+            try {
+                URL url;
+                HttpURLConnection urlConnection = null;
+                try {
+                    url = new URL(JSON_URL);
+                    urlConnection = (HttpURLConnection) url.openConnection();
+
+                    InputStream in = urlConnection.getInputStream();
+                    InputStreamReader isr = new InputStreamReader(in);
+                    int data = isr.read();
+                    while (data != -1) {
+                        current += (char) data;
+                        data = isr.read();
+
+                    }
+                    return current;
+
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
+                }
+            }
+            catch(Exception e){
+                e.printStackTrace();
+            }
+            return current;
+        }
+        @Override
+        protected void onPostExecute(String s){
+            try{
+                Calendar calendar = Calendar.getInstance();
+                String thisMonth = String.valueOf(calendar.get(Calendar.MONTH)+1);
+                String thisYear = String.valueOf(calendar.get(Calendar.YEAR));
+                Log.d("month",thisYear+"/"+thisMonth);
+
+                JSONObject jsonObject = new JSONObject(s);
+                JSONArray jsonArray = jsonObject.getJSONArray("parkinson");
+                for(int i = 0; i<jsonArray.length();i++){
+                    JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+                    year = jsonObject1.getString("year");
+                    month = jsonObject1.getString("month");
+
+                    day = Integer. parseInt(jsonObject1.getString("day"));
+
+                    result = jsonObject1.getString("result");
+
+                    // Hashmap
+                    if(result.equals("有異狀")&&year.equals(thisYear)&&month.equals(thisMonth)){
+                        if(1<=day && day<=7){
+                            week1 = week1 + 1;
+                        }
+                        else if(8<=day && day<=14){
+                            week2 = week2 + 1;
+                        }
+                        else if(15<=day && day<=21){
+                            week3 = week3 + 1;
+                        }
+                        else if(22<=day && day<=28){
+                            week4 = week4 + 1;
+                        }
+                        else if(29<=day){
+                            week5 = week5 + 1;
+                        }
+
+                    }
+                }
+                mChart = (LineChart) findViewById(R.id.linechart);
+                mChart.setDragEnabled(true);
+                mChart.setScaleEnabled(false);
+                ArrayList<Entry> yValues = new ArrayList<Entry>();
+                int a = 1;
+                yValues.add(new Entry(0,week1));
+                yValues.add(new Entry(1,week2));
+                yValues.add(new Entry(2,week3));
+                yValues.add(new Entry(3,week4));
+                yValues.add(new Entry(4,week5));
+                LineDataSet set1 = new LineDataSet(yValues,"Data Set 1");
+                set1.setFillAlpha(110);
+                set1.setColor(Color.RED);
+                set1.setDrawFilled(true);
+                set1.setLineWidth(3f);
+                ArrayList<ILineDataSet> dataSets = new ArrayList<>();
+                dataSets.add(set1);
+                LineData data = new LineData(dataSets);
+                mChart.setData(data);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
 }
+
+

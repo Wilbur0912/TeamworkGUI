@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -29,21 +30,21 @@ public class watchHistory extends AppCompatActivity {
 
 
     private ListView lv;
-    String namey, age;
 
+    String year,month,result;
+    int day;
     String dateString;
     private static String JSON_URL = "http://172.20.10.2:3000/";
-    ArrayList<HashMap<String,String>> friendsList;
+    ArrayList<HashMap<String,String>> resultList;
     @Override
     protected void onCreate(Bundle savedInstanceState)   {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.historyresults);
-        TextView date = findViewById(R.id.dateTime) ;
+
         Intent myIntent = getIntent();
         dateString = myIntent.getStringExtra("date");
-        date.setText(dateString);
 
-        friendsList = new ArrayList<>();
+        resultList = new ArrayList<>();
         lv = findViewById(R.id.Listview);
         GetData getData = new GetData();
         getData.execute();
@@ -90,17 +91,28 @@ public class watchHistory extends AppCompatActivity {
         protected void onPostExecute(String s){
             try{
                 JSONObject jsonObject = new JSONObject(s);
-                JSONArray jsonArray = jsonObject.getJSONArray("Friends");
+                JSONArray jsonArray = jsonObject.getJSONArray("parkinson");
                 for(int i = 0; i<jsonArray.length();i++){
                     JSONObject jsonObject1 = jsonArray.getJSONObject(i);
-                    age = jsonObject1.getString("age");
-                    namey = jsonObject1.getString("name");
+                    year = jsonObject1.getString("year");
+                    month = jsonObject1.getString("month");
 
+                    day = Integer.parseInt(jsonObject1.getString("day"));
+
+                    result = jsonObject1.getString("result");
+                    Log.d("r",result);
                     // Hashmap
-                    HashMap<String, String> friends = new HashMap<>();
-                    friends.put("name",age+": "+ namey);
-                    friends.put("age",age);
-                    friendsList.add(friends);
+                    HashMap<String, String> resultAndDate = new HashMap<>();
+                    String d = year+"/"+month+"/"+day;
+                    Log.d("date",dateString);
+                    Log.d("dated",d);
+                    Log.d("dateString",dateString);
+                    if(d.equals(dateString)){
+                        Log.d("rss",result);
+                        resultAndDate.put("result",d + " "+ result);
+                        Log.d("susc","suscc");
+                        resultList.add(resultAndDate);
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -109,11 +121,13 @@ public class watchHistory extends AppCompatActivity {
             //Displaying the results
             ListAdapter adapter = new SimpleAdapter(
                     watchHistory.this,
-                    friendsList,
+                    resultList,
                     R.layout.historyresults,
-                    new String[] {"name","age"},
+                    new String[] {"result"},
                     new int[]{R.id.textView});
             lv.setAdapter(adapter);
+            String str = resultList.toString();
+            Log.d("sus",str);
         }
     }
 }

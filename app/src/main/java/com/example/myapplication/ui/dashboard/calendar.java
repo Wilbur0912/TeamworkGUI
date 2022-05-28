@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.R;
 
+import java.util.Calendar;
+
 public class calendar extends AppCompatActivity {
     CalendarView calendarView;
     TextView myDate;
@@ -25,8 +27,15 @@ public class calendar extends AppCompatActivity {
         setContentView(R.layout.fragment_dashboard);
 
         calendarView = (CalendarView) findViewById(R.id.calendarView);
+
         myDate = (TextView) findViewById(R.id.myDate);
         confirm = (Button) findViewById(R.id.button);
+        Calendar calendar = Calendar.getInstance();
+        String thisMonth = String.valueOf(calendar.get(Calendar.MONTH)+1);
+        String thisYear = String.valueOf(calendar.get(Calendar.YEAR));
+        String today = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+        date = thisYear + "/" + thisMonth + "/" + today;
+        myDate.setText(date);
         confirm.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(calendar.this, com.example.myapplication.ui.dashboard.watchHistory.class);

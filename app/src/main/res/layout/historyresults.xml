@@ -5,12 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".ui.dashboard.watchHistory">
-    <TextView
-        android:id="@+id/dateTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="date"
-        android:textSize="35dp"/>
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
