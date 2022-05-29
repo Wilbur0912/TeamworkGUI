@@ -31,7 +31,7 @@ public class watchHistory extends AppCompatActivity {
 
     private ListView lv;
 
-    String year,month,result;
+    String date,year,month,result;
     int day;
     String dateString;
     private static String JSON_URL = "http://172.20.10.2:3000/";
@@ -94,11 +94,11 @@ public class watchHistory extends AppCompatActivity {
                 JSONArray jsonArray = jsonObject.getJSONArray("parkinson");
                 for(int i = 0; i<jsonArray.length();i++){
                     JSONObject jsonObject1 = jsonArray.getJSONObject(i);
-                    year = jsonObject1.getString("year");
-                    month = jsonObject1.getString("month");
-
-                    day = Integer.parseInt(jsonObject1.getString("day"));
-
+                    date = jsonObject1.getString("date");
+                    String[] parts = date.split("/");
+                    year = parts[0];
+                    month = parts[1];
+                    day = Integer.parseInt(parts[2]);
                     result = jsonObject1.getString("result");
                     Log.d("r",result);
                     // Hashmap

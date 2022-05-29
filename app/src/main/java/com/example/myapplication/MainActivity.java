@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity  {
     private ActivityMainBinding binding;
 
 
-    String year,month,result;
+    String date,year,month,result;
     int day;
     String dateString;
     private static String JSON_URL = "http://172.20.10.2:3000/";
@@ -148,11 +148,11 @@ public class MainActivity extends AppCompatActivity  {
                 JSONArray jsonArray = jsonObject.getJSONArray("parkinson");
                 for(int i = 0; i<jsonArray.length();i++){
                     JSONObject jsonObject1 = jsonArray.getJSONObject(i);
-                    year = jsonObject1.getString("year");
-                    month = jsonObject1.getString("month");
-
-                    day = Integer. parseInt(jsonObject1.getString("day"));
-
+                    date = jsonObject1.getString("date");
+                    String[] parts = date.split("/");
+                    year = parts[0];
+                    month = parts[1];
+                    day = Integer.parseInt(parts[2]);
                     result = jsonObject1.getString("result");
 
                     // Hashmap
@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity  {
                 yValues.add(new Entry(1,week2));
                 yValues.add(new Entry(2,week3));
                 yValues.add(new Entry(3,week4));
-                yValues.add(new Entry(4,week5));
+                //yValues.add(new Entry(4,week5));
                 LineDataSet set1 = new LineDataSet(yValues,"Data Set 1");
                 set1.setFillAlpha(110);
                 set1.setColor(Color.RED);
