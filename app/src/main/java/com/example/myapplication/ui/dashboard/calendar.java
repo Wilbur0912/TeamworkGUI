@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.R;
+import com.example.myapplication.watchHistory;
 
 import java.util.Calendar;
 
@@ -38,7 +39,7 @@ public class calendar extends AppCompatActivity {
         myDate.setText(date);
         confirm.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(calendar.this, com.example.myapplication.ui.dashboard.watchHistory.class);
+                Intent intent = new Intent(calendar.this, watchHistory.class);
                 intent.putExtra("date",date);
                 startActivity(intent);
             }

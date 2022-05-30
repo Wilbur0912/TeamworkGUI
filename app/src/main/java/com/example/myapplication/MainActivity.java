@@ -5,19 +5,14 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
-import android.widget.TextView;
 
-import com.example.myapplication.ui.dashboard.watchHistory;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
@@ -30,6 +25,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.myapplication.databinding.ActivityMainBinding;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,18 +39,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity  {
 
     private ActivityMainBinding binding;
 
-
-    String date,year,month,result;
-    int day;
-    String dateString;
-    private static String JSON_URL = "http://172.20.10.2:3000/";
-    ArrayList<HashMap<String,String>> friendsList;
     private static final String TAG = "MainActivity";
     private LineChart mChart;
     int week1 = 0;
@@ -62,80 +51,22 @@ public class MainActivity extends AppCompatActivity  {
     int week3 = 0;
     int week4 = 0;
     int week5 = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        friendsList = new ArrayList<>();
-        GetData getData = new GetData();
-        getData.execute();
-        BottomNavigationView navView = findViewById(R.id.nav_view);
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_dashboard)
-                .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        NavigationUI.setupWithNavController(binding.navView, navController);
-        navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
-            @Override
-            public void onDestinationChanged(@NonNull NavController navController, @NonNull NavDestination navDestination, @Nullable Bundle bundle) {
-                if(navDestination.getId() == R.id.navigation_dashboard) {
-                    Intent intent = new Intent(MainActivity.this, com.example.myapplication.ui.dashboard.calendar.class);
-                    startActivity(intent);
-                } else {
-
-                }
-            }
-
-        });
-
-
+        firebaseGetToken();
+        navigationBar();
+        showChart showchart = new showChart();
+        showchart.execute();
     }
 
-    public void openAboutHistory(View view){
-        Intent intent = new Intent(this, watchHistory.class);
-        startActivity(intent);
-    }
+    class showChart extends GetData {
+        JSONObject jsonObject;
+        JSONArray jsonArray;
 
-    public class GetData extends AsyncTask<String, String, String> {
-
-        @Override
-        protected String doInBackground(String... string){
-            String current ="";
-            try {
-                URL url;
-                HttpURLConnection urlConnection = null;
-                try {
-                    url = new URL(JSON_URL);
-                    urlConnection = (HttpURLConnection) url.openConnection();
-
-                    InputStream in = urlConnection.getInputStream();
-                    InputStreamReader isr = new InputStreamReader(in);
-                    int data = isr.read();
-                    while (data != -1) {
-                        current += (char) data;
-                        data = isr.read();
-
-                    }
-                    return current;
-
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    if (urlConnection != null) {
-                        urlConnection.disconnect();
-                    }
-                }
-            }
-            catch(Exception e){
-                e.printStackTrace();
-            }
-            return current;
-        }
         @Override
         protected void onPostExecute(String s){
             try{
@@ -144,8 +75,8 @@ public class MainActivity extends AppCompatActivity  {
                 String thisYear = String.valueOf(calendar.get(Calendar.YEAR));
                 Log.d("month",thisYear+"/"+thisMonth);
 
-                JSONObject jsonObject = new JSONObject(s);
-                JSONArray jsonArray = jsonObject.getJSONArray("parkinson");
+                jsonObject = new JSONObject(s);
+                jsonArray = jsonObject.getJSONArray("parkinson");
                 for(int i = 0; i<jsonArray.length();i++){
                     JSONObject jsonObject1 = jsonArray.getJSONObject(i);
                     date = jsonObject1.getString("date");
@@ -172,34 +103,81 @@ public class MainActivity extends AppCompatActivity  {
                         else if(29<=day){
                             week5 = week5 + 1;
                         }
-
+                        makeChart();
                     }
                 }
-                mChart = (LineChart) findViewById(R.id.linechart);
-                mChart.setDragEnabled(true);
-                mChart.setScaleEnabled(false);
-                ArrayList<Entry> yValues = new ArrayList<Entry>();
-                int a = 1;
-                yValues.add(new Entry(0,week1));
-                yValues.add(new Entry(1,week2));
-                yValues.add(new Entry(2,week3));
-                yValues.add(new Entry(3,week4));
-                //yValues.add(new Entry(4,week5));
-                LineDataSet set1 = new LineDataSet(yValues,"Data Set 1");
-                set1.setFillAlpha(110);
-                set1.setColor(Color.RED);
-                set1.setDrawFilled(true);
-                set1.setLineWidth(3f);
-                ArrayList<ILineDataSet> dataSets = new ArrayList<>();
-                dataSets.add(set1);
-                LineData data = new LineData(dataSets);
-                mChart.setData(data);
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
         }
+        private void makeChart(){
+            mChart = (LineChart) findViewById(R.id.linechart);
+            mChart.setDragEnabled(true);
+            mChart.setScaleEnabled(false);
+            ArrayList<Entry> yValues = new ArrayList<Entry>();
+            int a = 1;
+            yValues.add(new Entry(0,week1));
+            yValues.add(new Entry(1,week2));
+            yValues.add(new Entry(2,week3));
+            yValues.add(new Entry(3,week4));
+            //yValues.add(new Entry(4,week5));
+            LineDataSet set1 = new LineDataSet(yValues,"Data Set 1");
+            set1.setFillAlpha(110);
+            set1.setColor(Color.RED);
+            set1.setDrawFilled(true);
+            set1.setLineWidth(3f);
+            ArrayList<ILineDataSet> dataSets = new ArrayList<>();
+            dataSets.add(set1);
+            LineData data = new LineData(dataSets);
+            mChart.setData(data);
+        }
     }
+
+    public void navigationBar(){
+        BottomNavigationView navView = findViewById(R.id.nav_view);
+        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.navigation_home, R.id.navigation_dashboard)
+                .build();
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
+        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+        NavigationUI.setupWithNavController(binding.navView, navController);
+        navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
+            @Override
+            public void onDestinationChanged(@NonNull NavController navController, @NonNull NavDestination navDestination, @Nullable Bundle bundle) {
+                if(navDestination.getId() == R.id.navigation_dashboard) {
+                    Intent intent = new Intent(MainActivity.this, com.example.myapplication.ui.dashboard.calendar.class);
+                    startActivity(intent);
+                } else {
+
+                }
+            }
+
+        });
+    }
+    public void firebaseGetToken(){
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                            return;
+                        }
+
+                        String token = task.getResult();
+
+                        Log.d("tokendd", token);
+
+                    }
+
+                });
+    }
+
+
 }
+
+
 
 
