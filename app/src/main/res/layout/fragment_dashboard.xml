@@ -20,6 +20,7 @@
         android:layout_width="410dp"
         android:layout_height="622dp"
         android:orientation="vertical"
+
         app:layout_constraintTop_toBottomOf="@+id/text_dashboard"
         tools:layout_editor_absoluteX="0dp">
 
@@ -45,7 +46,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="160dp"
             android:background="@drawable/dg_btn"
-            android:text="確定"
+            android:text="Confirm"
             tools:layout_editor_absoluteX="11dp"
             tools:layout_editor_absoluteY="476dp" />
 

@@ -67,8 +67,11 @@ public class watchHistory extends AppCompatActivity {
                     }
                 }
                 TextView result = findViewById(R.id.Result);
+                TextView date = findViewById(R.id.Date);
                 Log.d("abccd",resultAndDate.get("result"));
-                result.setText(resultAndDate.get("result"));
+                String[] DateAndResult = resultAndDate.get("result").split(" ");
+                date.setText(DateAndResult[0]);
+                result.setText(DateAndResult[1]);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

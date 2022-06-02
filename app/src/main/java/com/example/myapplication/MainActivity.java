@@ -5,11 +5,19 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.DefaultValueFormatter;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -37,8 +45,11 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DecimalFormat;
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity  {
 
@@ -77,6 +88,8 @@ public class MainActivity extends AppCompatActivity  {
 
                 jsonObject = new JSONObject(s);
                 jsonArray = jsonObject.getJSONArray("parkinson");
+                TextView dateTitle = findViewById(R.id.date);
+                dateTitle.setText("June");
                 for(int i = 0; i<jsonArray.length();i++){
                     JSONObject jsonObject1 = jsonArray.getJSONObject(i);
                     date = jsonObject1.getString("date");
@@ -112,7 +125,7 @@ public class MainActivity extends AppCompatActivity  {
             }
 
         }
-        private void makeChart(){
+        private void makeChart() {
             mChart = (LineChart) findViewById(R.id.linechart);
             mChart.setDragEnabled(true);
             mChart.setScaleEnabled(false);
@@ -123,16 +136,54 @@ public class MainActivity extends AppCompatActivity  {
             yValues.add(new Entry(2,week3));
             yValues.add(new Entry(3,week4));
             //yValues.add(new Entry(4,week5));
-            LineDataSet set1 = new LineDataSet(yValues,"Data Set 1");
+            LineDataSet set1 = new LineDataSet(yValues,"June Data");
             set1.setFillAlpha(110);
             set1.setColor(Color.RED);
             set1.setDrawFilled(true);
             set1.setLineWidth(3f);
+            set1.setValueTextSize(25);//座標點數字大小
+            set1.setValueFormatter(new DefaultValueFormatter(0));//座標點數字的小數位數1位
+
+            XAxis xAxis = mChart.getXAxis();
+            xAxis.setSpaceMin(0.1f);//折線起點距離左側Y軸距離
+            xAxis.setSpaceMax(0.1f);//折線終點距離右側Y軸距離
+            xAxis.setDrawGridLines(false);//不顯示每個座標點對應X軸的線 (預設顯示)
+            xAxis.enableGridDashedLine(5f, 5f, 0f); //格線以虛線顯示，可設定虛線長度、間距等，如setDrawGridLines(false)則此設定無效
+            xAxis.setGridLineWidth(2f);//格線寬度
+
+            String[] xValue = new String[]{"Week1", "Week2", "Week3", "Week4"};
+            List<String> xList = new ArrayList<>();
+            for (int i = 0; i < xValue.length; i++) {
+                xList.add(xValue[i]);
+//            xList.add(String.valueOf(i +1).concat("月"));
+            }
+            /**
+             * 格式化軸標籤二種方式：
+             * 1、用圖表庫已寫好的類_如下X 軸使用
+             * 2、自己實現接口_下一步驟中Y 軸使用
+             * */
+            xAxis.setValueFormatter(new IndexAxisValueFormatter(xList));
+            YAxis rightAxis = mChart.getAxisRight();//獲取右側的軸線
+            rightAxis.setEnabled(false);//不顯示右側Y軸
+            YAxis leftAxis = mChart.getAxisLeft();//獲取左側的軸線
+            //leftAxis.setValueFormatter(new MyYAxisValueFormatter());
+            leftAxis.setGranularity(1f);//Y軸數值的間隔
+
+            Description description = mChart.getDescription();
+            description.setEnabled(false);//不顯示Description Label (預設顯示)
+            description.setText("adsf");
+
+            mChart.setPinchZoom(true); // true->X、Y軸同時按比例縮放、false:X、Y可單獨縮放
+
+            mChart.setDrawBorders(true);//顯示邊框 (預設不顯示)
             ArrayList<ILineDataSet> dataSets = new ArrayList<>();
             dataSets.add(set1);
             LineData data = new LineData(dataSets);
             mChart.setData(data);
+
+
         }
+
     }
 
     public void navigationBar(){

@@ -1,0 +1,99 @@
+Index: app/src/main/java/com/example/myapplication/watchHistory.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.myapplication;\r\n\r\nimport androidx.appcompat.app.AppCompatActivity;\r\n\r\nimport android.content.Intent;\r\nimport android.os.AsyncTask;\r\nimport android.os.Bundle;\r\nimport android.util.Log;\r\nimport android.widget.ListAdapter;\r\nimport android.widget.ListView;\r\nimport android.widget.SimpleAdapter;\r\nimport android.widget.TextView;\r\n\r\nimport com.example.myapplication.GetData;\r\nimport com.example.myapplication.R;\r\n\r\nimport org.json.JSONArray;\r\nimport org.json.JSONException;\r\nimport org.json.JSONObject;\r\n\r\nimport java.io.IOException;\r\nimport java.io.InputStream;\r\nimport java.io.InputStreamReader;\r\nimport java.net.HttpURLConnection;\r\nimport java.net.MalformedURLException;\r\nimport java.net.URL;\r\nimport java.util.ArrayList;\r\nimport java.util.HashMap;\r\n\r\npublic class watchHistory extends AppCompatActivity {\r\n\r\n\r\n    HashMap<String, String> resultAndDate = new HashMap<>();\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState)   {\r\n        super.onCreate(savedInstanceState);\r\n        setContentView(R.layout.historyresults);\r\n\r\n        getHistoryData getData = new getHistoryData();\r\n        Intent myIntent = getIntent();\r\n        getData.dateString = myIntent.getStringExtra(\"date\");\r\n        getData.execute();\r\n    }\r\n    public class getHistoryData extends GetData {\r\n        @Override\r\n        protected void onPostExecute(String s){\r\n            try{\r\n                JSONObject jsonObject = new JSONObject(s);\r\n                JSONArray jsonArray = jsonObject.getJSONArray(\"parkinson\");\r\n                for(int i = 0; i<jsonArray.length();i++){\r\n                    JSONObject jsonObject1 = jsonArray.getJSONObject(i);\r\n                    date = jsonObject1.getString(\"date\");\r\n                    String[] parts = date.split(\"/\");\r\n                    year = parts[0];\r\n                    month = parts[1];\r\n                    day = Integer.parseInt(parts[2]);\r\n                    result = jsonObject1.getString(\"result\");\r\n                    Log.d(\"r\",result);\r\n                    // Hashmap\r\n\r\n                    String d = year+\"/\"+month+\"/\"+day;\r\n\r\n                    if(d.equals(dateString)){\r\n                        Log.d(\"rss\",result);\r\n                        resultAndDate.put(\"result\",d + \" \"+ result);\r\n                        Log.d(\"susc\",resultAndDate.get(\"result\").toString());\r\n                    }\r\n                }\r\n                TextView result = findViewById(R.id.Result);\r\n                Log.d(\"abccd\",resultAndDate.get(\"result\"));\r\n                result.setText(resultAndDate.get(\"result\"));\r\n            } catch (JSONException e) {\r\n                e.printStackTrace();\r\n            }\r\n        }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/myapplication/watchHistory.java b/app/src/main/java/com/example/myapplication/watchHistory.java
+--- a/app/src/main/java/com/example/myapplication/watchHistory.java	(revision 062383fda3cdbe311f609919cd209ca9392252be)
++++ b/app/src/main/java/com/example/myapplication/watchHistory.java	(date 1654098033075)
+@@ -29,8 +29,6 @@
+ 
+ public class watchHistory extends AppCompatActivity {
+ 
+-
+-    HashMap<String, String> resultAndDate = new HashMap<>();
+     @Override
+     protected void onCreate(Bundle savedInstanceState)   {
+         super.onCreate(savedInstanceState);
+Index: app/src/main/java/com/example/myapplication/MainActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.myapplication;\r\n\r\nimport android.content.Intent;\r\nimport android.graphics.Color;\r\nimport android.os.AsyncTask;\r\nimport android.os.Bundle;\r\nimport android.util.Log;\r\n\r\nimport com.github.mikephil.charting.charts.LineChart;\r\nimport com.github.mikephil.charting.data.Entry;\r\nimport com.github.mikephil.charting.data.LineData;\r\nimport com.github.mikephil.charting.data.LineDataSet;\r\nimport com.github.mikephil.charting.interfaces.datasets.ILineDataSet;\r\nimport com.google.android.gms.tasks.OnCompleteListener;\r\nimport com.google.android.gms.tasks.Task;\r\nimport com.google.android.material.bottomnavigation.BottomNavigationView;\r\n\r\nimport androidx.annotation.NonNull;\r\nimport androidx.annotation.Nullable;\r\nimport androidx.appcompat.app.AppCompatActivity;\r\nimport androidx.navigation.NavController;\r\nimport androidx.navigation.NavDestination;\r\nimport androidx.navigation.Navigation;\r\nimport androidx.navigation.ui.AppBarConfiguration;\r\nimport androidx.navigation.ui.NavigationUI;\r\n\r\nimport com.example.myapplication.databinding.ActivityMainBinding;\r\nimport com.google.firebase.messaging.FirebaseMessaging;\r\n\r\nimport org.json.JSONArray;\r\nimport org.json.JSONException;\r\nimport org.json.JSONObject;\r\n\r\nimport java.io.IOException;\r\nimport java.io.InputStream;\r\nimport java.io.InputStreamReader;\r\nimport java.net.HttpURLConnection;\r\nimport java.net.MalformedURLException;\r\nimport java.net.URL;\r\nimport java.util.ArrayList;\r\nimport java.util.Calendar;\r\n\r\npublic class MainActivity extends AppCompatActivity  {\r\n\r\n    private ActivityMainBinding binding;\r\n\r\n    private static final String TAG = \"MainActivity\";\r\n    private LineChart mChart;\r\n    int week1 = 0;\r\n    int week2 = 0;\r\n    int week3 = 0;\r\n    int week4 = 0;\r\n    int week5 = 0;\r\n\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        binding = ActivityMainBinding.inflate(getLayoutInflater());\r\n        setContentView(binding.getRoot());\r\n        firebaseGetToken();\r\n        navigationBar();\r\n        showChart showchart = new showChart();\r\n        showchart.execute();\r\n    }\r\n\r\n    class showChart extends GetData {\r\n        JSONObject jsonObject;\r\n        JSONArray jsonArray;\r\n\r\n        @Override\r\n        protected void onPostExecute(String s){\r\n            try{\r\n                Calendar calendar = Calendar.getInstance();\r\n                String thisMonth = String.valueOf(calendar.get(Calendar.MONTH)+1);\r\n                String thisYear = String.valueOf(calendar.get(Calendar.YEAR));\r\n                Log.d(\"month\",thisYear+\"/\"+thisMonth);\r\n\r\n                jsonObject = new JSONObject(s);\r\n                jsonArray = jsonObject.getJSONArray(\"parkinson\");\r\n                for(int i = 0; i<jsonArray.length();i++){\r\n                    JSONObject jsonObject1 = jsonArray.getJSONObject(i);\r\n                    date = jsonObject1.getString(\"date\");\r\n                    String[] parts = date.split(\"/\");\r\n                    year = parts[0];\r\n                    month = parts[1];\r\n                    day = Integer.parseInt(parts[2]);\r\n                    result = jsonObject1.getString(\"result\");\r\n\r\n                    // Hashmap\r\n                    if(result.equals(\"有異狀\")&&year.equals(thisYear)&&month.equals(thisMonth)){\r\n                        if(1<=day && day<=7){\r\n                            week1 = week1 + 1;\r\n                        }\r\n                        else if(8<=day && day<=14){\r\n                            week2 = week2 + 1;\r\n                        }\r\n                        else if(15<=day && day<=21){\r\n                            week3 = week3 + 1;\r\n                        }\r\n                        else if(22<=day && day<=28){\r\n                            week4 = week4 + 1;\r\n                        }\r\n                        else if(29<=day){\r\n                            week5 = week5 + 1;\r\n                        }\r\n                        makeChart();\r\n                    }\r\n                }\r\n\r\n            } catch (JSONException e) {\r\n                e.printStackTrace();\r\n            }\r\n\r\n        }\r\n        private void makeChart(){\r\n            mChart = (LineChart) findViewById(R.id.linechart);\r\n            mChart.setDragEnabled(true);\r\n            mChart.setScaleEnabled(false);\r\n            ArrayList<Entry> yValues = new ArrayList<Entry>();\r\n            int a = 1;\r\n            yValues.add(new Entry(0,week1));\r\n            yValues.add(new Entry(1,week2));\r\n            yValues.add(new Entry(2,week3));\r\n            yValues.add(new Entry(3,week4));\r\n            //yValues.add(new Entry(4,week5));\r\n            LineDataSet set1 = new LineDataSet(yValues,\"Data Set 1\");\r\n            set1.setFillAlpha(110);\r\n            set1.setColor(Color.RED);\r\n            set1.setDrawFilled(true);\r\n            set1.setLineWidth(3f);\r\n            ArrayList<ILineDataSet> dataSets = new ArrayList<>();\r\n            dataSets.add(set1);\r\n            LineData data = new LineData(dataSets);\r\n            mChart.setData(data);\r\n        }\r\n    }\r\n\r\n    public void navigationBar(){\r\n        BottomNavigationView navView = findViewById(R.id.nav_view);\r\n        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(\r\n                R.id.navigation_home, R.id.navigation_dashboard)\r\n                .build();\r\n        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);\r\n        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);\r\n        NavigationUI.setupWithNavController(binding.navView, navController);\r\n        navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {\r\n            @Override\r\n            public void onDestinationChanged(@NonNull NavController navController, @NonNull NavDestination navDestination, @Nullable Bundle bundle) {\r\n                if(navDestination.getId() == R.id.navigation_dashboard) {\r\n                    Intent intent = new Intent(MainActivity.this, com.example.myapplication.ui.dashboard.calendar.class);\r\n                    startActivity(intent);\r\n                } else {\r\n\r\n                }\r\n            }\r\n\r\n        });\r\n    }\r\n    public void firebaseGetToken(){\r\n        FirebaseMessaging.getInstance().getToken()\r\n                .addOnCompleteListener(new OnCompleteListener<String>() {\r\n                    @Override\r\n                    public void onComplete(@NonNull Task<String> task) {\r\n                        if (!task.isSuccessful()) {\r\n                            Log.w(TAG, \"Fetching FCM registration token failed\", task.getException());\r\n                            return;\r\n                        }\r\n\r\n                        String token = task.getResult();\r\n\r\n                        Log.d(\"tokendd\", token);\r\n\r\n                    }\r\n\r\n                });\r\n    }\r\n\r\n\r\n}\r\n\r\n\r\n\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/myapplication/MainActivity.java b/app/src/main/java/com/example/myapplication/MainActivity.java
+--- a/app/src/main/java/com/example/myapplication/MainActivity.java	(revision 062383fda3cdbe311f609919cd209ca9392252be)
++++ b/app/src/main/java/com/example/myapplication/MainActivity.java	(date 1654098460534)
+@@ -45,7 +45,7 @@
+     private ActivityMainBinding binding;
+ 
+     private static final String TAG = "MainActivity";
+-    private LineChart mChart;
++
+     int week1 = 0;
+     int week2 = 0;
+     int week3 = 0;
+@@ -57,7 +57,7 @@
+         super.onCreate(savedInstanceState);
+         binding = ActivityMainBinding.inflate(getLayoutInflater());
+         setContentView(binding.getRoot());
+-        firebaseGetToken();
++        //firebaseGetToken(); //to get firebase Token
+         navigationBar();
+         showChart showchart = new showChart();
+         showchart.execute();
+@@ -66,7 +66,7 @@
+     class showChart extends GetData {
+         JSONObject jsonObject;
+         JSONArray jsonArray;
+-
++        private LineChart mChart;
+         @Override
+         protected void onPostExecute(String s){
+             try{
+@@ -156,24 +156,24 @@
+ 
+         });
+     }
+-    public void firebaseGetToken(){
+-        FirebaseMessaging.getInstance().getToken()
+-                .addOnCompleteListener(new OnCompleteListener<String>() {
+-                    @Override
+-                    public void onComplete(@NonNull Task<String> task) {
+-                        if (!task.isSuccessful()) {
+-                            Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+-                            return;
+-                        }
+-
+-                        String token = task.getResult();
+-
+-                        Log.d("tokendd", token);
+-
+-                    }
+-
+-                });
+-    }
++//    public void firebaseGetToken(){
++//        FirebaseMessaging.getInstance().getToken()
++//                .addOnCompleteListener(new OnCompleteListener<String>() {
++//                    @Override
++//                    public void onComplete(@NonNull Task<String> task) {
++//                        if (!task.isSuccessful()) {
++//                            Log.w(TAG, "Fetching FCM registration token failed", task.getException());
++//                            return;
++//                        }
++//
++//                        String token = task.getResult();
++//
++//                        Log.d("tokendd", token);
++//
++//                    }
++//
++//                });
++//    }
+ 
+ 
+ }
