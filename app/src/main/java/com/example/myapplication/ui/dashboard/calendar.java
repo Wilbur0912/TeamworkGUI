@@ -3,6 +3,8 @@ package com.example.myapplication.ui.dashboard;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.TextView;
@@ -24,7 +26,9 @@ public class calendar extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getSupportActionBar().hide();
         setContentView(R.layout.fragment_dashboard);
 
         calendarView = (CalendarView) findViewById(R.id.calendarView);
@@ -50,6 +54,7 @@ public class calendar extends AppCompatActivity {
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
                 date = year+"/"+(month+1)+"/"+dayOfMonth;
                 myDate.setText(date);
+
             }
         });
     }

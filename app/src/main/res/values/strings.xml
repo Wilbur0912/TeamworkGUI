@@ -4,7 +4,7 @@
     <string name="account_lbl">帳號: </string>
     <string name="password_lbl">密碼: </string>
     <string name="login">登入</string>
-    <string name="app_name">Pakinband</string>
+    <string name="app_name">Parkinband</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">History</string>
     <string name="title_activity_historyclasss">historyclasss</string>

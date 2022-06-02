@@ -21,7 +21,7 @@ public class GetData extends AsyncTask<String, String, String> {
     String date,year,month,result;
     int day;
     public String dateString;
-    private static String JSON_URL = "http://172.20.10.2:3000/";
+    private static String Spring_URL = "http://172.20.10.2:3000/";
     @Override
     protected String doInBackground(String... string){
         String current ="";
@@ -29,7 +29,7 @@ public class GetData extends AsyncTask<String, String, String> {
             URL url;
             HttpURLConnection urlConnection = null;
             try {
-                url = new URL(JSON_URL);
+                url = new URL(Spring_URL);
                 urlConnection = (HttpURLConnection) url.openConnection();
 
                 InputStream in = urlConnection.getInputStream();

@@ -37,7 +37,7 @@
             android:layout_marginLeft="120dp"
             android:text=" Date"
             android:textAlignment="center"
-            android:textColor="@color/design_default_color_primary"
+            android:textColor="#304040"
             android:textSize="23sp" />
 
         <Button
@@ -45,8 +45,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="160dp"
-            android:background="@drawable/dg_btn"
+
             android:text="Confirm"
+            android:backgroundTint="#304040"
             tools:layout_editor_absoluteX="11dp"
             tools:layout_editor_absoluteY="476dp" />
 
