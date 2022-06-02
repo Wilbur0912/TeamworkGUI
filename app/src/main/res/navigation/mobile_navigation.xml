@@ -18,7 +18,7 @@
         android:name="com.example.myapplication.ui.dashboard.DashboardFragment"
         android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_dashboard"
-        tools:context=".ui.dashboard.calendar"
+        tools:context=".calendar"
         />
 
 </navigation>

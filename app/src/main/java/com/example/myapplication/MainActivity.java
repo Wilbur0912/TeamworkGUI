@@ -2,14 +2,13 @@ package com.example.myapplication;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import com.example.myapplication.databinding.ActivityMainBinding;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -17,7 +16,6 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.DefaultValueFormatter;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -33,21 +31,12 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.example.myapplication.databinding.ActivityMainBinding;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.DecimalFormat;
-import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -204,7 +193,7 @@ public class MainActivity extends AppCompatActivity  {
             @Override
             public void onDestinationChanged(@NonNull NavController navController, @NonNull NavDestination navDestination, @Nullable Bundle bundle) {
                 if(navDestination.getId() == R.id.navigation_dashboard) {
-                    Intent intent = new Intent(MainActivity.this, com.example.myapplication.ui.dashboard.calendar.class);
+                    Intent intent = new Intent(MainActivity.this, calendar.class);
                     startActivity(intent);
                 } else {
 

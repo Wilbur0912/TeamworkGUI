@@ -14,10 +14,12 @@
         android:layout_height="510dp"
         android:padding="@dimen/activity_horizontal_margin"
 
-        app:layout_constraintBottom_toTopOf="@+id/nav_view"
+        app:layout_constraintBottom_toBottomOf="@+id/nav_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.516"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.61">
 
         <fragment
             android:id="@+id/nav_host_fragment_activity_main"
